@@ -54,12 +54,34 @@ inputCodigo.addEventListener("blur", () => {
 
 // Registrar movimiento
 form.addEventListener("submit", e => {
+  if (movimiento === "Ingreso") {
+  const totalEgresos = inventario
+    .filter(i => i.codigo === codigo && i.movimiento === "Egreso")
+    .reduce((s, i) => s + i.cantidad, 0);
+
+  const totalIngresos = inventario
+    .filter(i => i.codigo === codigo && i.movimiento === "Ingreso")
+    .reduce((s, i) => s + i.cantidad, 0);
+
+  const faltante = totalEgresos - totalIngresos;
+  if (faltante <= 0) {
+    alert(`✅ No hay egresos pendientes para ${descripcion} (${codigo}).`);
+    return;
+  }
+
+  if (cantidad > faltante) {
+    alert(`⚠️ El ingreso supera los egresos pendientes. Solo se puede ingresar hasta ${faltante}.`);
+    return;
+  }
+}
   e.preventDefault();
   const codigo = inputCodigo.value.trim();
   const descripcion = inputDescripcion.value.trim();
   const movimiento = document.getElementById("movimiento").value;
   const cantidad = parseInt(document.getElementById("cantidad").value);
   const fecha = new Date().toLocaleString("es-AR");
+  const persona = document.getElementById("persona").value.trim();
+  if (!persona) return; // Validación extra
 
   if (!codigo || !descripcion || cantidad <= 0) return;
   if (!stock[codigo]) stock[codigo] = { descripcion, inicial: 0 };
@@ -72,7 +94,7 @@ form.addEventListener("submit", e => {
     }
   }
 
-  inventario.push({ codigo, descripcion, movimiento, cantidad, fecha });
+  inventario.push({ codigo, descripcion, movimiento, cantidad, fecha, persona });
   localStorage.setItem("inventario", JSON.stringify(inventario));
   localStorage.setItem("stock", JSON.stringify(stock));
 
