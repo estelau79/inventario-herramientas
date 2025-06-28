@@ -259,3 +259,24 @@ document.getElementById("btn-escanear").addEventListener("click", () => {
 // Inicializar vistas
 renderizarRegistros();
 renderizarStock();
+document.getElementById("btn-escanear-stock").addEventListener("click", () => {
+  const qrArea = document.getElementById("qr-reader-stock");
+  qrArea.innerHTML = "";
+
+  const escaner = new Html5Qrcode("qr-reader-stock");
+  escaner.start(
+    { facingMode: "environment" },
+    { fps: 10, qrbox: 250 },
+    codigo => {
+      document.getElementById("codigoStock").value = codigo;
+      escaner.stop().then(() => {
+        qrArea.innerHTML = "";
+      });
+    },
+    error => {
+      // ignorar errores de escaneo en tiempo real
+    }
+  ).catch(err => {
+    alert("No se pudo acceder a la cámara: " + err);
+  });
+});
