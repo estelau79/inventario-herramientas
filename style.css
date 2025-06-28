@@ -217,3 +217,8 @@ td button {
     padding: 0.5rem;
   }
 }
+#qr-reader-stock {
+  max-width: 100%;
+  overflow: hidden;
+}
+
